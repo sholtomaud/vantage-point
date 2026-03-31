@@ -14,9 +14,13 @@ test.describe('Vantage Point App', () => {
     });
   });
 
-  test('should navigate to Loom view', async ({ page }) => {
+  test('should navigate to Loom view', async ({ page, isMobile }) => {
     await page.goto('/');
     
+    if (isMobile) {
+      await page.click('button:has-text("menu")');
+    }
+
     // Click on Loom navigation item
     await page.click('text=Loom');
     
