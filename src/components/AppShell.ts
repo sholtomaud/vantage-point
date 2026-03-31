@@ -77,30 +77,30 @@ export class AppShell extends BobaElement {
         <!-- Main Content -->
         <main class="flex-1 flex flex-col relative overflow-hidden bg-surface">
           <!-- Top Bar -->
-          <header class="h-16 lg:h-20 flex items-center justify-between px-4 lg:px-10 bg-surface/80 backdrop-blur-md z-30 border-b border-outline-variant/5">
+          <header class="h-12 lg:h-14 flex items-center justify-between px-4 lg:px-6 bg-surface/80 backdrop-blur-md z-30 border-b border-outline-variant/5">
             <div class="flex items-center gap-4">
               <button class="lg:hidden p-2 -ml-2 text-on-surface-variant" onclick="this.closest('app-shell').toggleMobileMenu()">
                 <span class="material-symbols-outlined">menu</span>
               </button>
-              <div class="flex items-center gap-3 text-on-surface-variant text-[10px] lg:text-xs label-sm">
-                <span class="hidden sm:inline">Workspace</span>
-                <span class="hidden sm:inline material-symbols-outlined text-xs opacity-30">chevron_right</span>
-                <span class="text-on-surface font-bold uppercase tracking-widest">${this.currentView}</span>
+              <div class="flex items-center gap-3 text-on-surface-variant text-[9px] lg:text-[10px] label-sm">
+                <span class="hidden sm:inline opacity-40">Workspace</span>
+                <span class="hidden sm:inline material-symbols-outlined text-xs opacity-40">chevron_right</span>
+                <span class="text-on-surface/80 font-bold uppercase tracking-widest">${this.currentView}</span>
               </div>
             </div>
             
-            <div class="flex items-center gap-2 lg:gap-8">
-              <div class="hidden md:flex items-center gap-3 px-4 py-2 rounded-full bg-surface-container-low text-[10px] label-sm text-on-surface-variant">
+            <div class="flex items-center gap-2 lg:gap-4">
+              <div class="hidden md:flex items-center gap-2 px-2.5 py-1 rounded-full bg-surface-container-low text-[9px] label-sm text-on-surface-variant">
                 <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
                 AI Engine: Gemini 3.1 Pro
               </div>
-              <div class="flex items-center gap-2 lg:gap-4">
-                <button class="p-2 rounded-lg hover:bg-surface-container text-on-surface-variant transition-calm">
-                  <span class="material-symbols-outlined text-xl lg:text-2xl">notifications</span>
+              <div class="flex items-center gap-1 lg:gap-2">
+                <button class="p-1.5 rounded-lg hover:bg-surface-container text-on-surface-variant transition-calm">
+                  <span class="material-symbols-outlined text-lg lg:text-xl">notifications</span>
                 </button>
                 <div class="hidden sm:block h-6 w-[1px] bg-outline-variant/10 mx-2"></div>
                 <button 
-                  class="px-4 lg:px-6 py-2 lg:py-2.5 rounded-lg btn-primary text-[10px] lg:text-xs font-bold label-sm whitespace-nowrap"
+                  class="px-3 lg:px-4 py-1.5 lg:py-2 rounded-lg btn-primary text-[9px] lg:text-[10px] font-bold label-sm whitespace-nowrap"
                   onclick="this.closest('app-shell').createNewAssessment()"
                 >
                   NEW ASSESSMENT
