@@ -14,7 +14,7 @@ export class DecisionQuadrantView extends BobaElement {
     return `
       <div class="flex h-full w-full bg-surface animate-fade-in flex-col overflow-hidden">
         <!-- Header -->
-        <div class="p-4 lg:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-surface-container-low border-b border-outline-variant/5">
+        <div class="px-4 py-3 lg:px-8 lg:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-surface-container-low border-b border-outline-variant/5">
           <div class="flex items-center gap-4 lg:gap-6">
             <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-xl lg:rounded-2xl bg-surface-container flex items-center justify-center">
               <span class="material-symbols-outlined text-secondary text-xl lg:text-2xl">grid_view</span>
