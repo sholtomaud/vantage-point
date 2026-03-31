@@ -86,9 +86,11 @@ export class VantageView extends BobaElement {
   }
 
   private renderNode(alt: Alternative): string {
+    const project = store.getProject();
     const viability = store.getViability(alt);
     const x = viability * 100;
-    const y = alt.merit * 100;
+    const maxMerit = Math.max(...project.alternatives.map(a => a.merit)) || 1;
+    const y = (alt.merit / maxMerit) * 100;
     
     // Size based on Utility Density if lens is active
     const utilityDensity = store.getUtilityDensity(alt);

@@ -122,10 +122,10 @@ export class LoomView extends BobaElement {
           <div class="p-8 lg:p-10 flex-1 overflow-y-auto">
             <h3 class="text-[10px] label-sm text-on-surface-variant opacity-40 mb-6 lg:mb-8 uppercase tracking-widest">Active Vectors</h3>
             <div class="space-y-6 lg:space-y-8">
-              ${this.renderVectorItem('Market Share', 68, 'var(--color-primary)')}
-              ${this.renderVectorItem('Innovation Index', 42, 'var(--color-tertiary)')}
-              ${this.renderVectorItem('Operational Risk', 15, 'var(--color-error)')}
-              ${this.renderVectorItem('Customer LTV', 84, 'var(--color-primary)')}
+              ${project.criteria.length > 0 ?
+                project.criteria.map((c, i) => this.renderVectorItem(c.label, Math.round(c.weight * 100), i % 2 === 0 ? 'var(--color-primary)' : 'var(--color-tertiary)')).join('') :
+                '<p class="text-[10px] text-on-surface-variant opacity-30 italic">No vectors defined</p>'
+              }
             </div>
             
             <div class="mt-12 lg:mt-20">
@@ -205,42 +205,39 @@ export class LoomView extends BobaElement {
         parts: [{ text: m.text }]
       }));
 
-      const responseText = await geminiService.processIntake(chatHistory);
+      const result = await geminiService.processIntake(chatHistory);
       
-      // Check for JSON response
-      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        try {
-          const json = JSON.parse(jsonMatch[0]);
-          if (json.type === 'INTAKE_COMPLETE') {
-            store.updateProject({
-              goal: json.data.goal,
-              criteria: json.data.criteria,
-              alternatives: json.data.alternatives
-            });
-            this.messages.push({
-              role: 'ai',
-              text: 'Strategic intake complete. Decision model updated. You can now explore the Vantage, Frontier, and Nexus views.',
-              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            });
-          } else {
-            this.messages.push({
-              role: 'ai',
-              text: responseText.replace(jsonMatch[0], '').trim(),
-              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            });
-          }
-        } catch (e) {
-          this.messages.push({
-            role: 'ai',
-            text: responseText,
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          });
-        }
+      if (result.type === 'INTAKE_COMPLETE' && result.data) {
+        store.updateProject({
+          goal: result.data.goal,
+          criteria: result.data.criteria?.map((c, i) => ({ id: `c${i}`, label: c.name, weight: 0 })),
+          alternatives: result.data.alternatives?.map((a, i) => ({
+            id: `a${i}`,
+            label: a.label,
+            cost: 1000000 * (i + 1), // Default mock values
+            time: 12,
+            risk: 0.5,
+            merit: 0
+          }))
+        });
+        this.messages.push({
+          role: 'ai',
+          text: result.message + ' You can now proceed to the AHP Wizard for pairwise evaluation.',
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+
+        // Auto-navigate to Wizard after a short delay
+        setTimeout(() => {
+          this.dispatchEvent(new CustomEvent('navigate', {
+            detail: { view: 'wizard' },
+            bubbles: true,
+            composed: true
+          }));
+        }, 3000);
       } else {
         this.messages.push({
           role: 'ai',
-          text: responseText,
+          text: result.message,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         });
       }

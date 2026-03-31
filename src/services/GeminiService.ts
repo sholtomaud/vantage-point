@@ -1,49 +1,58 @@
-import { GoogleGenAI } from "@google/genai";
+import { z } from "zod";
+import { zodToJsonSchema } from "zod-to-json-schema";
 
-export interface IntakeResult {
-  goal: string;
-  criteria: { name: string; weight: number; description: string }[];
-  alternatives: { label: string; merit: number; viability: number; cost: number; time: number; risk: number }[];
-}
+export const intakeSchema = z.object({
+  type: z.enum(["QUESTION", "INTAKE_COMPLETE"]).describe("Whether Gemini is asking a question or the intake is complete."),
+  message: z.string().describe("The message to the user."),
+  data: z.object({
+    goal: z.string().optional(),
+    criteria: z.array(z.object({
+      name: z.string(),
+      description: z.string()
+    })).optional(),
+    alternatives: z.array(z.object({
+      label: z.string(),
+      description: z.string()
+    })).optional()
+  }).optional()
+});
+
+export type IntakeResult = z.infer<typeof intakeSchema>;
 
 export class GeminiService {
-  private ai: GoogleGenAI;
+  async processIntake(chatHistory: { role: 'user' | 'model'; parts: { text: string }[] }[]): Promise<IntakeResult> {
+    const systemInstruction = `You are Vantage AI, a Strategic Decision Consultant.
+    Your goal is to help users structure a decision for AHP (Analytic Hierarchy Process) evaluation.
 
-  constructor() {
-    this.ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
-  }
+    Phase 1: Determine the Domain and Goal of the decision.
+    Phase 2: Identify the Criteria (Merit components).
+    Phase 3: Identify the Alternatives (Options).
 
-  async processIntake(chatHistory: { role: 'user' | 'model'; parts: { text: string }[] }[]): Promise<string> {
-    const response = await this.ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: chatHistory,
-      config: {
-        systemInstruction: `You are Vantage AI, a Decision Intelligence platform. 
-        Your goal is to help users frame complex decisions by separating Merit (What is best?) from Viability (What is possible?).
-        
-        Phase 1: Problem Deconstruction.
-        Ask clarifying questions to identify:
-        1. The core Goal.
-        2. The Criteria for success (Merit).
-        3. The Alternatives being considered.
-        4. The Constraints (Budget, Time, Risk).
-        
-        Be concise, professional, and analytical. Use "Calm Tech" tone.
-        
-        When you have enough information, output a JSON block with the following structure:
-        {
-          "type": "INTAKE_COMPLETE",
-          "data": {
-            "goal": "...",
-            "criteria": [{ "name": "...", "weight": 0.3, "description": "..." }],
-            "alternatives": [{ "label": "...", "merit": 0.8, "viability": 0.7, "cost": 1000000, "time": 12, "risk": 0.2 }]
-          }
-        }
-        Only output the JSON when you are certain the intake is complete. Otherwise, continue the conversation.`,
-      },
+    Be concise, professional, and analytical.
+
+    You MUST always return a structured JSON response following the schema.
+    If you need more information, set type to "QUESTION" and provide a message.
+    When you have identified the Goal, at least 3 Criteria, and at least 3 Alternatives, set type to "INTAKE_COMPLETE", provide the structured data, and a summary message.
+
+    AHP Domain Identification is crucial. Once the domain is set, help the user find the best options and criteria for that specific domain.`;
+
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: chatHistory,
+        systemInstruction,
+        responseMimeType: "application/json",
+        responseJsonSchema: zodToJsonSchema(intakeSchema),
+      }),
     });
 
-    return response.text;
+    if (!response.ok) {
+      throw new Error('Failed to fetch from Gemini API');
+    }
+
+    const result = await response.json();
+    return intakeSchema.parse(JSON.parse(result.text));
   }
 }
 

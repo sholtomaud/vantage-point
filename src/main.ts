@@ -7,6 +7,7 @@ import './components/views/ScenarioSimulatorView';
 import './components/views/ValueFrontierView';
 import './components/views/ConstraintIntakeView';
 import './components/views/HistoryView';
+import './components/views/AHPWizardView';
 import './index.css';
 
 const app = document.getElementById('app');

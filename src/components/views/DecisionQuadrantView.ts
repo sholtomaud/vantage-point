@@ -54,7 +54,11 @@ export class DecisionQuadrantView extends BobaElement {
             ${alternatives.map(alt => {
               const viability = store.getViability(alt);
               const x = viability * 100;
-              const y = (1 - alt.merit) * 100; // Invert merit for top-down
+                // AHP merit is already 0-1, but often small values.
+                // Let's normalize for the quadrant view so the best merit is at the top.
+                const maxMerit = Math.max(...alternatives.map(a => a.merit)) || 1;
+                const normalizedMerit = alt.merit / maxMerit;
+                const y = (1 - normalizedMerit) * 100; // Invert for top-down
               const color = viability > 0.5 ? 'var(--color-primary)' : 'var(--color-error)';
               return this.renderPoint(alt.label, x, y, color);
             }).join('')}
