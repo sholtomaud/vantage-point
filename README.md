@@ -4,33 +4,22 @@
 
 # Vantage Point
 
-Strategic decision-making application using Analytic Hierarchy Process (AHP) to calculate the Overall Vector of Priority (OVP) for alternatives.
+Strategic decision-making application using Analytic Hierarchy Process (AHP).
 
-## Run Locally
+## Setup
 
-**Prerequisites:** Node.js (v18+)
-
-1. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-
-2. **Set up environment variables:**
+1. **Set up environment variables:**
    Create a `.env` file in the root directory (you can copy `.env.example` as a template):
    ```bash
    cp .env.example .env
    ```
-   Edit `.env` and set your `GEMINI_API_KEY` to your Google Gemini API key.
+   Edit `.env` and set your `GEMINI_API_KEY`.
 
-3. **Run the application:**
-   To use the AI features, you need to run both the frontend development server and the backend proxy server:
-
+2. **Run the application:**
+   The application is containerized. To build and start the development environment:
    ```bash
-   npm run dev:all
+   make
+   make run
    ```
-
-   Alternatively, you can run them in separate terminals:
-   * Frontend: `npm run dev` (Port 3000)
-   * Backend: `npm run server` (Port 3001)
 
    View the app at `http://localhost:3000`.
