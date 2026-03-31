@@ -54,10 +54,7 @@ export class NexusView extends BobaElement {
               </div>
             </div>
             <div class="space-y-8">
-              ${this.renderComparisonRow('Market Penetration', alternatives)}
-              ${this.renderComparisonRow('Operational Cost', alternatives)}
-              ${this.renderComparisonRow('Innovation Velocity', alternatives)}
-              ${this.renderComparisonRow('Strategic Resilience', alternatives)}
+              ${project.criteria.map(c => this.renderComparisonRow(c.label, alternatives, c.id)).join('')}
             </div>
           </div>
         </div>
@@ -120,15 +117,21 @@ export class NexusView extends BobaElement {
     `;
   }
 
-  private renderComparisonRow(label: string, alternatives: Alternative[]): string {
+  private renderComparisonRow(label: string, alternatives: Alternative[], criterionId: string): string {
+    const project = store.getProject();
+    const matrix = project.alternativesMatrices[criterionId];
+
     return `
       <div class="flex flex-col gap-3">
         <span class="label-sm text-on-surface-variant/60 text-[10px] uppercase tracking-widest">${label}</span>
         <div class="h-2.5 flex gap-1 rounded-full overflow-hidden bg-surface-container border border-outline-variant/5">
           ${alternatives.slice(0, 3).map((alt, i) => {
-            const val = (alt.merit * 100) + (Math.random() * 20 - 10);
+            // We can show relative performance for this specific criterion if we had local priority vectors
+            // For now, using a simplified relative value from the matrix or just the overall merit
+            // Actually, let's use the overall merit for now as a placeholder for "vector strength"
+            const val = alt.merit * 300; // Scale for visual impact in the row
             const color = i === 0 ? 'bg-primary' : i === 1 ? 'bg-tertiary' : 'bg-secondary';
-            return `<div class="h-full ${color} rounded-full transition-all duration-1000" style="width: ${Math.max(10, Math.min(100, val))}%"></div>`;
+            return `<div class="h-full ${color} rounded-full transition-all duration-1000" style="width: ${Math.max(5, Math.min(100, val))}%"></div>`;
           }).join('')}
         </div>
       </div>

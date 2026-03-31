@@ -70,7 +70,9 @@ export class ValueFrontierView extends BobaElement {
             <div class="absolute inset-0 p-8 lg:p-12">
               ${alternatives.map(alt => {
                 const x = (alt.cost / project.budget) * 100;
-                const y = (1 - alt.merit) * 100;
+                const maxMerit = Math.max(...alternatives.map(a => a.merit)) || 1;
+                const normalizedMerit = alt.merit / maxMerit;
+                const y = (1 - normalizedMerit) * 100;
                 return this.renderDataPoint(alt, x, y);
               }).join('')}
             </div>
@@ -106,9 +108,10 @@ export class ValueFrontierView extends BobaElement {
   private calculateFrontierPath(alternatives: Alternative[], closed: boolean = false): string {
     if (alternatives.length === 0) return '';
     const project = store.getProject();
+    const maxMerit = Math.max(...alternatives.map(a => a.merit)) || 1;
     const points = alternatives.map(alt => ({
       x: (alt.cost / project.budget) * 100,
-      y: (1 - alt.merit) * 100
+      y: (1 - (alt.merit / maxMerit)) * 100
     }));
     
     let path = `M ${points[0].x} ${points[0].y}`;
