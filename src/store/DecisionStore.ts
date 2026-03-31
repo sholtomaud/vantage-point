@@ -29,6 +29,13 @@ class DecisionStore extends EventTarget {
   private assessments: DecisionProject[] = [];
   private currentProjectId: string | null = null;
 
+  private generateId(): string {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+    return Math.random().toString(36).substring(2, 11);
+  }
+
   constructor() {
     super();
     this.loadFromStorage();
@@ -41,7 +48,7 @@ class DecisionStore extends EventTarget {
 
   private createInitialProject() {
     const initial: DecisionProject = {
-      id: crypto.randomUUID(),
+      id: this.generateId(),
       goal: 'APAC Market Expansion 2026',
       criteria: [
         { id: 'c1', label: 'Market Share', weight: 0.4 },
@@ -96,7 +103,7 @@ class DecisionStore extends EventTarget {
 
   createNewProject(goal: string = 'New Strategic Decision') {
     const newProject: DecisionProject = {
-      id: crypto.randomUUID(),
+      id: this.generateId(),
       goal,
       criteria: [],
       alternatives: [],
