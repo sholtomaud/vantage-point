@@ -43,6 +43,7 @@ export class AppShell extends BobaElement {
           <nav class="flex-1 px-4 space-y-1 mt-4 lg:mt-8 overflow-y-auto">
             <div class="label-sm text-on-surface-variant/40 px-4 mb-2 uppercase tracking-widest text-[10px]">Analysis</div>
             ${this.renderNavItem('loom', 'forum', 'Loom', 'Conversation')}
+            ${this.renderNavItem('wizard', 'balance', 'Wizard', 'Pairwise')}
             ${this.renderNavItem('nexus', 'compare_arrows', 'Nexus', 'Comparison')}
             ${this.renderNavItem('vantage', 'view_quilt', 'Vantage', 'Analysis')}
             ${this.renderNavItem('quadrant', 'grid_view', 'Quadrant', 'Mapping')}
@@ -137,6 +138,7 @@ export class AppShell extends BobaElement {
   private renderView(): string {
     switch (this.currentView) {
       case 'loom': return '<loom-view></loom-view>';
+      case 'wizard': return '<ahp-wizard-view></ahp-wizard-view>';
       case 'nexus': return '<nexus-view></nexus-view>';
       case 'vantage': return '<vantage-view></vantage-view>';
       case 'quadrant': return '<quadrant-view></quadrant-view>';
