@@ -6,6 +6,8 @@ CONTAINER_NAME := vantage-point-dev
 # Default target
 all: build
 
+run: dev
+
 # ─── 1. System Lifecycle ──────────────────────────────────────────
 start:
 	@echo "🔌 Checking container system service..."
@@ -31,7 +33,7 @@ dev: start
 		-v "$(PWD):/app" \
 		-v /app/node_modules \
 		--name "$(CONTAINER_NAME)" \
-		"$(IMAGE_APP)" npm run dev
+		"$(IMAGE_APP)" npm run dev:all
 
 # ─── 4. Tests ─────────────────────────────────────────────────────
 tests-e2e: build-app
